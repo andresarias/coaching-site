@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Andres Arias — Coaching</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #fafaf8;
+      color: #2c2c2c;
+      font-family: 'Inter', sans-serif;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 612px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .name {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+      color: #999;
+    }
+
+    .quote-container {
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .quote-text {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.75rem;
+      line-height: 1.5;
+      font-weight: 400;
+      font-style: italic;
+      color: #2c2c2c;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .quote-text.visible {
+      opacity: 1;
+    }
+
+    .quote-author {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: #999;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .quote-author.visible {
+      opacity: 1;
+    }
+
+    .cta-button {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      color: #2c2c2c;
+      text-decoration: none;
+      border: 1px solid #ccc;
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .cta-button:hover {
+      background-color: #2c2c2c;
+      color: #fafaf8;
+      border-color: #2c2c2c;
+    }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      margin-top: 1rem;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #ddd;
+      transition: background-color 0.5s ease;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background-color: #999;
+    }
+
+    @media (max-width: 600px) {
+      .quote-text {
+        font-size: 1.35rem;
+      }
+
+      .quote-container {
+        min-height: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="name">Andres Arias</div>
+
+    <div class="quote-container">
+      <div class="quote-text" id="quote-text"></div>
+      <div class="quote-author" id="quote-author"></div>
+    </div>
+
+    <a href="https://calendly.com/andres-arias/office-hours" target="_blank" rel="noopener" class="cta-button">Schedule a conversation</a>
+
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <script>
+    const quotes = [
+      {
+        text: "Between stimulus and response there is a space. In that space is our power to choose our response. In our response lies our growth and our freedom.",
+        author: "Commonly attributed to Viktor Frankl"
+      },
+      {
+        text: "You do not have to be good. You do not have to walk on your knees for a hundred miles through the desert, repenting. You only have to let the soft animal of your body love what it loves.",
+        author: "Mary Oliver, Wild Geese"
+      },
+      {
+        text: "The real voyage of discovery consists not in seeking new landscapes, but in having new eyes.",
+        author: "Marcel Proust"
+      },
+      {
+        text: "AI produces information. Humans create understanding.",
+        author: "Andres Arias"
+      },
+      {
+        text: "Be patient toward all that is unsolved in your heart and try to love the questions themselves, like locked rooms and like books that are now written in a very foreign tongue.",
+        author: "Rainer Maria Rilke, Letters to a Young Poet"
+      },
+      {
+        text: "Tell me, what is it you plan to do with your one wild and precious life?",
+        author: "Mary Oliver, The Summer Day"
+      },
+      {
+        text: "The curious paradox is that when I accept myself just as I am, then I can change.",
+        author: "Carl Rogers"
+      },
+      {
+        text: "We do not see things as they are. We see things as we are.",
+        author: "Anais Nin"
+      },
+      {
+        text: "The mind, once stretched by a new idea, never returns to its original dimensions.",
+        author: "Oliver Wendell Holmes Sr."
+      },
+      {
+        text: "When we are no longer able to change a situation, we are challenged to change ourselves.",
+        author: "Viktor Frankl, Man's Search for Meaning"
+      },
+    ];
+
+    let current = 0;
+    const textEl = document.getElementById('quote-text');
+    const authorEl = document.getElementById('quote-author');
+    const progressEl = document.getElementById('progress');
+
+    // Shuffle quotes on each visit
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    shuffle(quotes);
+
+    // Build progress dots
+    quotes.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.addEventListener('click', () => {
+        current = i;
+        showQuote(current);
+        resetTimer();
+      });
+      progressEl.appendChild(dot);
+    });
+
+    function showQuote(index) {
+      textEl.classList.remove('visible');
+      authorEl.classList.remove('visible');
+
+      setTimeout(() => {
+        textEl.textContent = '\u201C' + quotes[index].text + '\u201D';
+        authorEl.textContent = quotes[index].author;
+        textEl.classList.add('visible');
+        authorEl.classList.add('visible');
+
+        document.querySelectorAll('.dot').forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }, 400);
+    }
+
+    function getDuration(text) {
+      const words = text.split(/\s+/).length;
+      const readingTime = (words / 150) * 60 * 1000; // 150 wpm, comfortable pace
+      return Math.max(readingTime, 8000) + 4000; // minimum 8s reading + 4s breathing room
+    }
+
+    let timer;
+    function resetTimer() {
+      clearTimeout(timer);
+      const duration = getDuration(quotes[current].text);
+      timer = setTimeout(() => {
+        current = (current + 1) % quotes.length;
+        showQuote(current);
+        resetTimer();
+      }, duration);
+    }
+
+    // Start
+    showQuote(0);
+    resetTimer();
+  </script>
+</body>
+</html>
