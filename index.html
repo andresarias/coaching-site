@@ -104,10 +104,30 @@
       border-color: #2c2c2c;
     }
 
+    .nav-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-arrow {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #ccc;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: color 0.3s ease;
+      line-height: 1;
+    }
+
+    .nav-arrow:hover {
+      color: #666;
+    }
+
     .progress {
       display: flex;
       gap: 6px;
-      margin-top: 1rem;
     }
 
     .dot {
@@ -145,7 +165,11 @@
 
     <a href="https://calendly.com/andres-arias/office-hours" target="_blank" rel="noopener" class="cta-button">Schedule a conversation</a>
 
-    <div class="progress" id="progress"></div>
+    <div class="nav-row">
+      <button class="nav-arrow" id="prev-btn" aria-label="Previous quote">&larr;</button>
+      <div class="progress" id="progress"></div>
+      <button class="nav-arrow" id="next-btn" aria-label="Next quote">&rarr;</button>
+    </div>
   </div>
 
   <script>
@@ -189,6 +213,30 @@
       {
         text: "When we are no longer able to change a situation, we are challenged to change ourselves.",
         author: "Viktor Frankl, Man's Search for Meaning"
+      },
+      {
+        text: "We do not think ourselves into new ways of living, we live ourselves into new ways of thinking.",
+        author: "Fr. Richard Rohr"
+      },
+      {
+        text: "You do not need to know precisely what is happening, or exactly where it is all going. What you need is to recognize the possibilities and challenges offered by the present moment, and to embrace them with courage, faith, and hope.",
+        author: "Thomas Merton"
+      },
+      {
+        text: "The most important thing is a person. A person who incites your curiosity and feeds your curiosity; and machines cannot do that in the same way that people can.",
+        author: "Steve Jobs"
+      },
+      {
+        text: "In the beginner\u2019s mind there are many possibilities, but in the expert\u2019s mind there are few.",
+        author: "Shunryu Suzuki, Zen Mind, Beginner\u2019s Mind"
+      },
+      {
+        text: "The impediment to action advances action. What stands in the way becomes the way.",
+        author: "Marcus Aurelius, Meditations"
+      },
+      {
+        text: "The measure of intelligence is the ability to change.",
+        author: "Albert Einstein"
       },
     ];
 
@@ -251,6 +299,19 @@
         resetTimer();
       }, duration);
     }
+
+    // Arrow navigation
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      current = (current - 1 + quotes.length) % quotes.length;
+      showQuote(current);
+      resetTimer();
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      current = (current + 1) % quotes.length;
+      showQuote(current);
+      resetTimer();
+    });
 
     // Start
     showQuote(0);
